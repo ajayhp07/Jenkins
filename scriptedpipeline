@@ -1,0 +1,72 @@
+node('built-in')
+{
+    stage('Download')
+    {
+        try
+        {
+            git'https://github.com/ajayhp07/maven.git'
+        }
+        catch(Exception e1)
+        {
+            mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'DOwnload Failed', to: 'ajjuhp783@gmail.com'
+            exit(1)
+        }
+    }
+    stage('Build')
+    {
+        try
+        {
+            sh'mvn package'
+            
+        }
+        catch(Exception e2)
+        {
+            mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Build Failed', to: 'ajjuhp783@gmail.com'
+            exit(1)
+            
+        }
+    }
+    stage('Deploy')
+    {
+        try
+        {
+            sh'scp /var/lib/jenkins/workspace/scrip/webapp/target/webapp.war ubuntu@172.31.44.162:/var/lib/tomcat9/webapps/app.war '
+        }
+        catch(Exception e3)
+        {
+            mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Build Failed', to: 'ajjuhp783@gmail.com'
+            exit(1)
+            
+        }
+    }
+    stage('Testing')
+    {
+        try
+        {
+            git'https://github.com/ajayhp07/Test.git'
+            sh'java -jar /var/lib/jenkins/workspace/scrip/testing.jar'
+            
+        }
+        catch(Exception e4)
+        {
+            mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'test Failed', to: 'ajjuhp783@gmail.com'
+            exit(1)
+            
+        }
+    }
+    stage('Delivery')
+    {
+        try
+        {
+            input message: 'Waiting For Approval', submitter: 'hari'
+            sh'scp /var/lib/jenkins/workspace/scrip/webapp/target/webapp.war ubuntu@172.31.37.90:/var/lib/tomcat9/webapps/test.war '
+        }
+        catch(Exception e5)
+        {
+            mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Deploy Failed', to: 'ajjuhp783@gmail.com'
+            exit(1)
+            
+        }
+    }
+    
+}
