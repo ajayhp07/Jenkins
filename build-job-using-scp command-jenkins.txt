@@ -1,0 +1,53 @@
+scp sourcefile username@private_ip:destination_path
+
+-->scp /var/lib/jenkins/workspace/declarative-pipeline/webapp/target/webapp.war ubuntu@QA-server_private_ip:/var/lib/tomcat9/webapps/testapp.war
+
+-->scp /var/lib/jenkins/workspace/declarative-pipeline/webapp/target/webapp.war ubuntu@QA-server_private_ip:/var/lib/tomcat9/webapps/testapp.war
+---------
+step1
+----------
+1.connect to QA-server 
+2.modify sshd_config file "PasswordAuthentication no"
+						  yes
+3.restart sshd
+4.setup password to ubuntu user in the QA-server
+5.chmod o+x -R /var/lib/tomcat9 -->perform this command  
+
+---------------------------------------------
+step2
+------
+1.connect to prodserver 
+2.modify sshd_config file "PasswordAuthentication no"
+						  yes
+3.restart sshd
+4.setup password to ubuntu user in the prodserver
+5.chmod o+x -R /var/lib/tomcat9 -->perform this command
+----------------------------------------------
+step3
+--------
+1.connect to jenkins server
+2.switch into jenkins user 
+3.generate ssh-keygen
+4.copy the public key to QA-server and Prod server
+	ssh-copy-id ubuntu@qa_server_private_ip
+	ssh-copy-id ubuntu@prod_server_private_ip
+5.after enable passwordless method from jenkins to QA-server and Prod server
+---------------------------------------------------
+step4
+----------
+1.now create declarative-pipeline project without using pipeline syntax
+  deploy war/ear files into QA-server and prod-server  
+2.in the stage Contiuos Deployment 
+	sh '''scp /var/lib/jenkins/workspace/declarative-pipeline/webapp/target/webapp.war username@QA-server_private_ip:/var/lib/tomcat9/webapps/test.war'''
+3.in the stage Continuos Delivery  
+	sh '''scp /var/lib/jenkins/workspace/declarative-pipeline/webapp/target/webapp.war username@prod-server_private_ip:/var/lib/tomcat9/webapps/prod.war'''
+	
+4.Now apply and save 
+5.Build the job 
+---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+
+
+
+
+

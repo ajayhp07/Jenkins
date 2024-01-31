@@ -1,0 +1,89 @@
+Jenkins-server
+-----------------------------------------------------------
+#!/bin/bash
+sudo apt-get update -y
+sudo hostnamectl set-hostname Jenkins
+sudo apt-get install openjdk-11-jdk -y
+sudo apt-get install maven git -y
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+ /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+ https://pkg.jenkins.io/debian binary/ | sudo tee \
+ /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins -y
+================================================
+QA-server
+-------------------------------------------------
+#!/bin/bash
+sudo apt-get update -y
+sudo hostnamectl set-hostname QA-server
+sudo apt-get install tomcat9 -y
+sudo apt-get install tomcat9-admin
+======================================================
+Prod-server
+--------------------------------------------------
+#!/bin/bash
+sudo apt-get update -y
+sudo hostnamectl set-hostname Prod-server
+sudo apt-get install tomcat9 -y
+sudo apt-get install tomcat9-admin
+==============================================
+Addind users in tomcat server
+----------------------------------------------
+<tomcat-users>
+	<user username="thej" password="thej" roles="manager-script/>
+</tomcat-users>
+==================================================
+jenkins download from online--
+wget https://get.jenkins.io/war-stable/2.375.1/jenkins.war
+=====================================================
+Tomcat9 Application Script  
+=============================================================
+#!/bin/bash
+sudo apt-get update -y
+sudo hostnamectl set-hostname QA-server  
+sudo apt-get install tomcat9 tomcat9-admin -y
+
+# adding content to create users inside tomcat-users.xml file
+
+echo -e "<tomcat-users>\n\t<user username=\"thej\" password=\"thej\" roles=\"manager-script\"/>\n</tomcat-users>" | sudo tee /etc/tomcat9/tomcat-users.xml
+
+#------------------------------
+# modify password for existing user 
+# Replace 'ubuntu' with the username of the user you want to set the password for
+username="ubuntu"
+
+# Replace 'your_new_password' with the desired password
+new_password="mypassword"
+
+# Create a temporary file to store the username and password
+temp_file=$(mktemp)
+
+# Write the username and password in the temporary file
+echo "$username:$new_password" > "$temp_file"
+
+# Use chpasswd to set the password for the user
+sudo chpasswd < "$temp_file"
+
+# Remove the temporary file
+rm "$temp_file"
+
+# Optionally, you can verify if the password change was successful
+if [ $? -eq 0 ]; then
+  echo "Password set successfully for user: $username"
+else
+  echo "Failed to set the password for user: $username"
+fi
+#----------------------------------------
+
+# to make PasswordAuthentication no to yes
+sudo sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+
+# restart service of ssh
+sudo service ssh restart
+
+# restart tocat9 service
+sudo service tomcat9 restart
+===========================================
+

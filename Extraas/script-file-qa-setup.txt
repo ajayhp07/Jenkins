@@ -1,0 +1,15 @@
+#!/bin/bash
+apt-get update -y
+hostnamectl set-hostname QA-server
+apt-get install tomcat9 -y
+apt-get install tomcat9-admin -y
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+service ssh restart
+cat > /etc/tomcat9/tomcat-users.xml<<EOF
+<tomcat-users>
+	<user username="thej" password="thej" roles="manager-script"/>
+</tomcat-users>
+EOF
+chmod -R 777 /var/lib/tomcat9
+
+

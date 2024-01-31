@@ -1,0 +1,68 @@
+declarative pipeline with Exception Handling try and catch
+------------------------------------------------------------------
+pipeline{
+    agent any
+    stages{
+        stage('ContinuosDownload'){
+            steps{
+                script{
+                    try{
+                        git  'https://github.com/thej950/maven.git'
+                    }
+                    catch(Exception e1){
+                        mail bcc: '', body: 'download failed from git', cc: '', from: '', replyTo: '', subject: 'CI failed ', to: 'thej.devops@gmail.com'
+                    }
+                }
+            }
+        }
+        stage('ContinuosBuild'){
+            steps{
+                script{
+                    try{
+                        sh 'mvn package'
+                    }
+                    catch(Exception e2){
+                        mail bcc: '', body: 'artifact failed to ', cc: '', from: '', replyTo: '', subject: 'CI failed ', to: 'thej.devops@gmail.com'
+                    }
+                }
+            }
+        }
+        stage('ContinuosDeployment'){
+            steps{
+                script{
+                    try{
+                         sh '''scp /var/lib/jenkins/workspace/declarative-pipeline/webapp/target/webapp.war ubuntu@172.31.42.1:/var/lib/tomcat9/webapps/hello.war'''
+                    }
+                    catch(Exception e3){
+                        mail bcc: '', body: 'failed to deploy in the test server', cc: '', from: '', replyTo: '', subject: 'CI failed ', to: 'thej.devops@gmail.com'
+                    }
+                }
+            }
+        }
+        stage('ContinuosTesting'){
+            steps{
+                script{
+                    try{
+                        git 'https://github.com/thej950/FunctionalTesting.git'
+                        sh 'java -jar /var/lib/jenkins/workspace/declarative-pipeline/testing.jar'
+                    }
+                    catch(Exception e4){
+                        mail bcc: '', body: 'failed to deploy in testing server', cc: '', from: '', replyTo: '', subject: 'CI failed ', to: 'thej.devops@gmail.com'
+                    }
+                }
+            }
+        }
+        stage('ContinuosDelivery'){
+            steps{
+                script{
+                    try{
+                        sh '''scp /var/lib/jenkins/workspace/declarative-pipeline/webapp/target/webapp.war ubuntu@172.31.32.133:/var/lib/tomcat9/webapps/prodapp.war'''
+                    }
+                    catch(Exception e5){
+                        mail bcc: '', body: 'failed to delivery in the production servers ', cc: '', from: '', replyTo: '', subject: 'CD failed ', to: 'thej.devops@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}

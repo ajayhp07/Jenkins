@@ -1,0 +1,109 @@
+Pipeline as Code
+=====================
+This is the process of implementing all the stages of CI-CD
+from the level of a Groovy script file called as the Jenkinsfile
+
+Advantages
+================
+1 Since this is a code it can be uploaded into git and all the
+team members can review and edit the code and still git will 
+maintain multiple versions and we can decide what version to use
+
+2 Jenkinsfiles can withstand planned and unplanned restart of the 
+Jenkins master
+
+3 They can perform all stages of ci-cd with minimum no of plugins
+so they are more faster and secure
+
+4 We can hanlde real world challanges like if conditions,loops
+  exception handling etc.ie if a stage in ci-cd passes we want 
+to execute some steps and it fails we want to execute some other
+steps
+
+=======================================================================
+Pipeline as code can be implemented in 2 ways
+1 Scripted Pipeline
+2 Declarative Pipeline
+
+Syntax of Scripted Pipeline
+================================
+node('built-in')
+{
+   stage('Stage name in ci-cd')
+   {
+     Groovy code to implement this stage
+   }
+}
+
+Syntax of Declarative Pipeline
+===================================
+pipeline
+{
+  agent any
+  stages
+  {
+    stage('Stage name in CI-CD')
+    {
+      steps
+      {
+         Groovy code to implement this stage
+      }
+    }
+  }
+}
+=================================================================================
+Scripted Pipeline
+========================
+1 Go to the dashboard of jenkins
+2 Click on New item
+3 Enter item name as "ScriptedPipeline"
+4 Select Pipeline--->Click on OK
+
+==============================================================================================
+node('built-in')
+{
+    stage('ContinuousDownload')
+    {
+        git 'https://github.com/intelliqittrainings/maven.git'
+    }
+    stage('ContinuousBuild')
+    {
+        sh 'mvn package'
+    }
+    stage('ContinuousDeployment')
+    {
+       deploy adapters: [tomcat9(credentialsId: '8cc7d40a-bab0-438d-8dc2-f0d886815228', path: '', url: 'http://172.31.16.84:8080')], contextPath: 'testapp', war: '**/*.war'
+    }
+    stage('ContinuousTesting')
+    {
+        git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+        sh 'java -jar /home/ubuntu/.jenkins/workspace/ScriptedPipeline/testing.jar'
+    }
+    stage('ContinuousDelivery')
+    {
+        input message: 'Need approvals from the DM!', submitter: 'srinivas'
+        deploy adapters: [tomcat9(credentialsId: '8cc7d40a-bab0-438d-8dc2-f0d886815228', path: '', url: 'http://172.31.29.58:8080')], contextPath: 'prodapp', war: '**/*.war'
+    }
+        
+}
+=========================================================================================================================
+
+--->first stage download source code from github 
+-->second stage build the source code
+-->third stage deploy code into qa-servers
+-->fourth stage first download selenium scripts related to test source code and test the code 
+-->fifth stage deploy code into prodservers
+Note:above fifth stage normally we dont have permissions to deploy so in that case we use to give some more information in the fifth stage 
+-->provide manager approval msg
+=========================================================================================
+example:
+-->manager name is srinivas
+-->goto manage jenkins-->manage users-->create a user(srinivas) with neccessary information-->click on create user 
+-----------
+pipeline syntax:
+sample step: waite for interactive input
+message: waiting for approval from the DM!
+-->click on advanced
+allower submitter: srinivas
+-->click on generate pipeline syntax
+----------------

@@ -1,0 +1,50 @@
+poll scm and web hooks Jenkins9th-session
+---------------------------------------------------------------------
+1.poll scm works based on whenever code changes and upload into 
+repository automatically job builds 
+2.when we give credential into the POLL SCM 
+	MINUTE HOUR DOM MONTH DOW
+	  *	*    *     *   *     
+note:star represent repitavely
+3.open job configure-->goto general-->go to build triggers-->select POLL SCM
+
+4.Provides a cron -like feature to periodically execute this project.
+This feature is primarily for using Jenkins as a cron replacement, 
+and it is not ideal for continuously building software projects . 
+When people first start continuous integration, they are often 
+so used to the idea of regularly scheduled builds like daily/weekly 
+that they use this feature. However, the point of continuous integration 
+is to start a build as soon as a change is made, to provide a quick 
+feedback to the change. To do that you need to hook up SCM change 
+notification to Jenkins .
+------------------------------------
+webhooks
+-----------
+1.here whenever code is modified that time only intimation will send to jenkins
+  to build the job that is called web hooks
+2.webhooks first configure the at the level of web repository in the github
+3.goto github-->open one project like "maven"-->open settings-->webhooks-->add webhook-->asking credential of github
+4.here display webhook information in the playLoad URL give jenkins http://jenkins_public_ip:8080/github-webhook/
+	-->content type-->select json 
+	-->click on add webhook
+5.Now goto Jenkins web page -->goto project -->configure-->goto general-->goto build trigger-->select Github hook trigger for GITScm polling 
+	-->click on save 
+6.now here my jenkins never go into check the remote repository whenever code changes in the git repository
+  git will send a notification to the jenkins to build the job and based on that notification 
+  jenkins trigger the CI and CD 
+
+=================================================
+Q:how wil you automate cicd in such a way that whenever developer uploading code it should automatically 
+ 
+-----------------------
+POLL SCM : poll scm works check if code modified or not every time based on specified time loop (which means every 5 min) if code is not modified it will not build if code modified then it will trigger build job 
+-->diadvantage here jenkins request to github every five minuites or one minuites (specifid in the credentiol) 
+-->by using pollscm jenkins uneccessarly checking to github whether code modified or not it may take system resources what ever time we specified there 
+
+WEBHOOKS: it works like whenever code modified then only github send to notfication to jenkins then only jenkins will trigger to build the job 
+-->here remote repository send notifications to jenkins whenever code modified this is better option
+
+===================================
+
+ 
+	

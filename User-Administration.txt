@@ -1,0 +1,30 @@
+User-Administration ---- Session 5th --1:00 min to 20:00 min
+========================
+1.open manage jenkins-->security-->manage users
+2.create users ravi and rani -->two users created 
+3.imagine ravi for developer job related work
+  imagine rani for tester job related work
+4.by defaults after creating user. user have all permissions
+5.to restrict users specify permission to users based on their roles
+6.now install a pluggin called role-based "authorization strategies" pluggin
+  -click install without resart
+  --after installation pluggin
+7.go to manage jenkings-->security-->configure global security 
+8.observe authentication --- in the box change to role based Strategy -- apply-and save
+9.go to manage jenking-->security-->manage and assign role
+10.open manage role
+11.global role--role to add--enter in the box "employee"
+    --A new role added to in that box give permission make tick mark related employee
+      permissions. --apply-save
+12.item role--role to add -- "developer" in the box
+    pattern "Dev.*" in the box  --apply-save
+13. again role to add in the box "tester" --- pattern "test.*" -- apply-save 
+14. go into assign role
+15. add users/group 
+    user-- ravi--add
+    user-- rani--add
+16. select them as employee
+17.item role--- add ravi and rani
+18. give permissions based on their job
+    ex:- ravi is a developer
+	 rani is a tester   

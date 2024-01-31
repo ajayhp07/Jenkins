@@ -1,0 +1,73 @@
+post conditions
+-------------------------
+1.post conditions cannot work in scripted pipeline. it will work only declarated pipeline
+2.post conditions will apply after all stages CI and CD completed 
+3.in the post conditions there  is child stages  like success and failuere scenarios
+syntax:
+-------------
+post{
+     success{
+	    //code
+	    }
+      failure{
+	     //code
+	     }
+     }
+---------------------------------------
+Exception Handling
+---------------------------------------------
+Exception Handling means error hadling 
+Exception handling in Jenkins refers to the process of capturing and handling errors that may occur 
+during the execution of a Jenkins job. This is typically done using try-catch blocks in the Jenkinsfile 
+(the script used to define the job's pipeline) or by using Jenkins plugins that provide additional exception 
+handling functionality. The purpose of exception handling is to prevent Jenkins jobs from failing due to 
+unexpected errors and to provide meaningful error messages that can help with debugging and troubleshooting.
+----------------
+try and catch
+-->if code generated error its enter into try section if its if code fail its enter into catch section
+-->if code presented in try section work properly it wont goto catch section
+Exception handling syntax:
+try{
+    //code
+   }
+catch(Exception e){
+	//code
+	          }
+-->it can be implemented in scripted pipeline and declarated pipeline
+-->but small variations 
+-----------------------------------
+syntax for declarative pipeline try and catch
+-------------------------------------
+pipeline{
+    agent any
+    stages{
+        stage('CI and CD'){
+            steps{
+                script{
+                    try{
+                        //ci and cd code apply here
+                    }
+                    catch{
+                        //applying pipeline syntax code appyling
+                        //for to send mail
+                    }
+                }
+            }
+        }
+    }
+}
+------------------------------------------------------------------------
+syntax for scripted pipeline try and catch
+--------------------------------------------
+node('built-in'){
+    stage('CI and CD'){
+        try{
+            //code to excute
+        }
+        catch(Exception e1){
+            //if above code is not work
+	    //excute error e1 message to mail
+        }
+    }
+}
+----------------------------------------------------------------------------

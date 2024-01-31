@@ -1,0 +1,9 @@
+intigrate mail server to jekins Session 15th time 40:00 min
+-------------------------------------------------------------
+1.how to integrate jekins with mail server 
+	
+	-->goto manage jekins-->goto  configure system-->search for E-mail notification 
+	   smtp server-->give smtp.gmail.com-->click on advance-->click on Use SMTP authentication -->give username (thej.devops@gmail.com) and password (********)
+	-->click on Use SSL-->provide SMTP port related to jenkins (465)-->test the gmail here jenkins try to send to gmail but gmail dont accept because some modificatio need to change at gmail level
+
+----------------------------------------------------------------------------------------------------------------------------------------

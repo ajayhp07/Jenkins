@@ -1,0 +1,59 @@
+MASTER AND SLAVE ON DECLARATIVE-PIPELINE
+--------------------------------------------------------------------
+pipeline{
+    agent none
+    stages{
+        stage('dowload'){
+            agent{
+                label 'built-in'
+            }
+            steps{
+               script{
+                   git 'https://github.com/thej950/maven.git'
+               }
+            }
+        }
+        stage('build'){
+            agent{
+                label 'built-in'
+            }
+            steps{
+                script{
+                    sh 'mvn package'
+                }
+            }
+        }
+        stage('deploy'){
+            agent{
+                label 'built-in'
+            }
+            steps{
+                script{
+                    sh '''scp /var/lib/jenkins/workspace/job1/webapp/target/webapp.war ubuntu@172.31.26.240:/var/lib/tomcat9/webapps/test.war'''
+                }
+            }
+        }
+        stage('testcode'){
+            agent{
+                label 'slave'
+            }
+            steps{
+                script{
+                    git 'https://github.com/thej950/FunctionalTesting.git'
+                    sh 'java -jar /home/ubuntu/work/workspace/job1/testing.jar'
+                }
+            }
+        }
+        stage('deliverycode'){
+            agent{
+                label 'built-in'
+            }
+            steps{
+                script{
+                    sh '''scp /var/lib/jenkins/workspace/job1/webapp/target/webapp.war ubuntu@172.31.19.114:/var/lib/tomcat9/webapps/prod.war'''
+                }
+            }
+        }
+        
+    }
+}

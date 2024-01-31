@@ -1,0 +1,7 @@
+setup jenkins web page
+--------------------------
+1.open jebkins web page with jenkins_public_ip:8080
+2.enter password /var/lib/jenkins/secrets/initialAdminPassword --password availabe here
+3.install suggested pluggins
+4.enter name -password-confirm password-fullname-gmail
+----------------------------------------

@@ -1,0 +1,34 @@
+Scripted-pipeline concept
+------------------------------------
+step1: launch 3 machine jenkins, qa-server, prodserver
+step2: install neccessary applications on them
+------------------------------------------------------------------------------
+Jenkins		QA-server		Prod-server
+-------------	-------------	-----------------
+java		tomcat9		tomcat9
+maven		tomcat9-admin	tomcat9-admin
+git	
+jankins
+-------------------------------------------------------------------------------------
+step3: Establish password less connection from jenkins user to qa-server and prod server
+step4: goto jenkins web page create scripted pipeline write code inside pipeline section
+==================================================
+node('built-in'){
+	stage('ContinuosDownload'){
+		git 'https://github.com/thej950/maven.git'
+	}
+	stage('ContinuosBuild'){
+		sh 'mvn package'
+	}
+	stage('Continuosdeployment'){
+		sh '''scp /var/lib/jenkins/workspace/{Project_name}/webapp/target/webapp.war username@qa-private-ip:/var/lib/tomcat9/webapps/testapp.war'''
+	}
+	stage('ContinuosTesting'){
+		git 'https://github.com/thej950/FunctionalTesting.git'
+		sh 'java -jar /var/lib/jenkins/workspace/{project_name}/testing.jar'
+	}
+	stage('ContinuosDelivery'){
+		sh '''scp /var/lib/jenkins/workspace/{project_name}/webapp/target/webapp.war username@prod-private-ip:/var/lib/tomcat9/webapps/prodapp.war'''
+	}
+===========================================================================
+		

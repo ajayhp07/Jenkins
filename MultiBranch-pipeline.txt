@@ -1,0 +1,47 @@
+Multi branch pipeline Session 15th time 9:30 min  
+--------------------------------------------------------
+A multibranch pipeline in Jenkins is a Jenkinsfile that defines a pipeline for multiple branches of a single Git repository. 
+When a change is pushed to the repository, Jenkins automatically detects the branch and runs the pipeline for that branch. 
+This allows for separate build and deployment processes for different branches, such as development, staging, and production. 
+Jenkins uses the Jenkinsfile to define the pipeline stages, steps, and actions for each branch.
+------------------------------------------------------------
+-->in every organisation there are developes create code and upload code into git. they do freaquently changing code for better results
+   based on client requirement and upload into git 
+-->also developers create code different branches to complete work in a uncluttered way 
+	supose there is master branch in that branch 
+		   	loans branch
+			personal banking branch
+-->some time they want to merger with master branch and run or build the job 
+-->some times they need to run job at the level of loans branch and perform only two steps download and build the job
+   for that we need run job in the multi branch pipeline 
+-->in the multi branch pipeline provide build and run the job at the same time seperately and after code modified in the github 
+   it will automatically excutes both job seperately and indivudually also 
+-->if one branch code modified and upload into github then that job only excutes
+--->for that we need "jenkinsfile" in the both branches regarding how many steps need to perform job need to specify separately
+    but main importantly jenkinsfiles should be same in every branch then only it will build the job 
+-----------------------------------------------	
+some git commands at local repository 
+---------------------------------------
+	-->git remote add origin http://github/repository_link_provide_here --->for create link to your local repository to remote repository
+	-->git push -u origin -->this command only upload master branch changes
+	-->git push -u --all  -->this command upload all master and child branches  changes also 
+--------------------------------------
+steps:
+-----------------
+1.Create a remote repository in the github 
+2.upload code into github all branches
+3.open jenkins webpage 
+4.create a new job "Multi-branch-pipeline" name-->select Multibranch pipeline
+	-->select branch sources-->project repository-->(provide http://link_of the git hub where all code uploaded )
+	-->automatically take jenkins file and make sure you have same name file of all branches 
+	-->if you want to run you job periodically then select "Periodically" option if not otherwise run job
+	-->save 
+5.if code modified and upload into github automatically run job based on jenkinsfile
+6.if code modified and upload code into github related to all branches it builds the job all branches
+  or if code modified and upload code into github in a sigle branch it will perform only that branch 
+-------------------------------------------------------------------------------------------------------------------------------------- 
+
+
+
+
+

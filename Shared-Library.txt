@@ -1,0 +1,202 @@
+Shared Libraries jenkins 14th session
+------------------------
+-->Shared libraries can be implemented in Both scripted and declarative pipeline projects.
+-->purpose of shared library is mainly to create a project with already defined code in the git hub and  reuse that code 
+-->In Jenkins, a shared library is a set of reusable functions or classes that can be used across multiple Jenkinsfiles in a Jenkins pipeline. These functions or classes can include common tasks, such as checking out code from a version control system, building and testing code, and deploying code to various environments. Shared libraries allow for code reuse and can help to make Jenkinsfiles more modular and maintainable.
+
+-->shared library created in the github
+--goto github-->create a new repository(mylibrary)-->click on create repository
+-->next step click on "creating a new file" in the Quick setup tab
+-->display mylibrary--enter in the box first /vars/filename.groovy
+ 
+=======================================================
+math.groovy -->it is file name
+----------------------------------------------------
+def sum(a,b)
+{
+      echo "The sum of ${a} and ${b} is ${a+b}"
+}
+def sub(a,b)
+{
+      echo "The substraction of ${a} and ${b} is ${a-b}"
+}
+def mul(a,b)
+{
+      echo "The product of ${a} and ${b} is ${a*b}"  
+}
+def div(a,b)
+{
+      echo "The division of ${a} and ${b} is ${a/b}"
+}
+------------------------------------------
+cicd.groovy -->filename
+-------------------------------------
+def newGit(repo){
+	git $"{repo}"
+}
+---------------------------
+cicd -->is file
+newGit -->function
+======================================================================================================
+note:above code is in git hub in a math.groovy file file name can be anything example filename.groovy
+note:sum,sub,mul,div those 4 are functions
+note:we can create multiple groovy files in a library
+======================================================================================================
+-->click on commit new file
+-->now goto jenkins web page 
+-->goto manage jenkins-->click on configure system-->find Global pipeline libraries-->click Add-->give name (newlibrary)-->Default version(main)--modern SCM-->git--give main url from github-->apply and save 
+
+next-->create job(declarative-pipeline-library)-->select pipeline-->ok
+==================================================================
+-->newlibrary in jenkins and linked with Library repository in the github
+===================================================================
+syntax
+--------
+@Library('newlibrary')_
+pipeline{
+	agent any
+	stages{
+	  stage('Example shared library'){
+		steps{
+		    script{
+		      //code
+		    }
+		}
+	    }
+	}
+    }
+---------------------------------------------	
+@Library('newlibrary')_
+pipeline{
+	agent any
+	stages{
+	  stage('Example shared library'){
+		steps{
+		    script{
+		      math.sum(10,20)
+		    }
+		}
+	    }
+	}
+    } 
+-------------------------------------------
+note:newlibrary is the name we provided in jenkins and link between to github Library repository we make link between them in jenkins manage-->system config-->global pipeline library
+-----------------------------------------
+-->note:output will be a+b
+		       10+20=30	
+note:here the control goto github repository a value loaded with 10 and b value loaded with 20
+     and gives output 10+20=30
+note:math.sum (math is filename sum is the function)
+------------------------------------------
+cicd.groovy filename /Library/vars/cicd.groovy
+-------------------------------------------
+def newGit(repo)
+{
+    git "${repo}"
+}
+def newMaven()
+{
+    sh 'mvn package'
+}
+def newDeploy(workspace,ip,context)
+{
+    sh "scp /var/lib/jenkins/workspace/${workspace}/webapp/target/webapp.war ubuntu@${ip}:/var/lib/tomcat9/webapps/${context}.war"
+}
+def runSelenium(workspace)
+{
+    sh "java -jar /var/lib/jenkins/workspace/${workspace}/testing.jar"
+}
+def newDelivery(workspace,ip,context)
+{
+    sh "scp /var/lib/jenkins/workspace/${workspace}/webapp/target/webapp.war ubuntu@${ip}:/var/lib/tomcat9/webapps/${context}.war"
+}
+============================================================
+declarative pipeline 
+@Library(newlibrary)_
+pipelie{
+    agent any
+    stages{
+        stage('ContinuosDownload'){
+            steps{
+                script{
+                    cicd.newGit("https://github.com/thej950/maven.git")
+                }
+            }
+        }
+    }
+}
+=============================================================
+note:cicd.newGit
+	cicd -->filename in the github /Library/vars/cicd
+	newGit ->it is one of function in the cicd
+---------------------------------------------------------------
+declarative-pipeline-library ---->Job complete (CI & CD)
+====================================================================================== 
+======================================================================================================  
+@Library('newlibrary')_
+pipeline{
+    agent any
+    stages{
+        stage('ContinuosDownload'){
+            steps{
+                script{
+                    cicd.newGit("https://github.com/thej950/maven.git")
+                }
+            }
+        }
+        stage('ContinuosBuild'){
+            steps{
+                script{
+                    cicd.newMaven()
+                }
+            }
+        }
+        stage('ContinuosDeploymet'){
+            steps{
+                script{
+                    cicd.newDeploy("declarative-pipeline-library","172.31.42.1","testapp95")
+                }
+            }
+        }
+        stage('ContinuosTesting'){
+            steps{
+                script{
+                    cicd.newGit("https://github.com/thej950/FunctionalTesting.git")
+                    cicd.runSelenium("declarative-pipeline-library")
+                }
+            }
+        }
+        stage('ContinuosDelivery'){
+            steps{
+                script{
+                    cicd.newDelivery("declarative-pipeline-library","172.31.32.133","prodapp95")
+                }
+            }
+        }
+    }
+}
+=================================================================================================================
+===================================================================================================================
+Scripted-pipeline-library  
+-------------------------------------------
+@Library('newlibrary')_
+node('built-in'){
+    stage('ContinuosDownload'){
+        cicd.newGit("https://github.com/thej950/maven.git")
+    }
+    stage('ContinuosBuild'){
+        cicd.newMaven()
+    }
+    stage('ContinuosDeployment'){
+        cicd.newDeploy("Scripted-pipeline-library","172.31.42.1","testapp9")
+    }
+    stage('ContinuosTesting'){
+        cicd.newGit("https://github.com/thej950/FunctionalTesting.git")
+        cicd.runSelenium("Scripted-pipeline-library")
+    }
+    stage('ContinuosDelivery'){
+        cicd.newDeploy("Scripted-pipeline-library","172.31.32.133","prodapp9")
+    }
+}
+=================================================================================================
+

@@ -1,0 +1,61 @@
+pipeline{
+    agent any
+    
+     environment {
+        APP_NAME = "myapp"
+        ECR_REGISTRY = "115498080659.dkr.ecr.us-east-1.amazonaws.com"
+        ECR_REPOSITORY = "thej"
+        IMAGE_NAME = "${APP_NAME}"
+        BUILD_VERSION = getVersion()
+    }
+    
+
+    stages{
+        stage("Clear Workspace"){
+            steps{
+                cleanWs()
+            }
+        }
+        stage("Download Code"){
+            steps{
+                git 'https://github.com/thej950/project-1.git'
+            }
+        }
+        stage("Test Application"){
+            steps{
+                    sh 'mvn test'
+            }
+        }
+        stage("Build Application Code"){
+            steps{
+                sh 'mvn package'
+            }
+        }
+        stage("Build Docker image"){
+            steps{
+                 sh "docker build -t $APP_NAME:$BUILD_VERSION ."
+            }
+        }
+        stage("Push Docker image To ECR"){
+            steps{
+                script{
+                    sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
+                    sh "docker tag $APP_NAME:$BUILD_VERSION $ECR_REGISTRY/$ECR_REPOSITORY:$BUILD_VERSION"
+                    sh "docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BUILD_VERSION"
+                }
+            }
+        }
+    }
+}
+def getVersion() {
+    def currentDate = new Date().format('yyyyMMdd')
+    def buildNumber = env.BUILD_NUMBER ?: '0'
+    return "1.0.${currentDate}-${buildNumber}"
+}
+
+
+
+
+
+
+

@@ -1,0 +1,74 @@
+master-slave ---- Session 6th 26:00 min to 
+--------------
+-->master slave is an architecture simply allows you to 
+   distribute the work load of your master machine
+   istead of running multiple jobs at master machine create a slave machines
+   disribute the work to slave machine
+-->slave.jar --->it means it is capable to take worload of master and excute on the slave 
+----------------
+1.launch 2 machines with ubuntu specify jenkins-server and slave-server
+-------------------------
+step:1 master-jenkins 
+---------------
+1.connect to jenkins install java,git and maven and jenkins and update repo
+2.setup jenkins web page
+--------------------------------------
+step:2 slave machine
+-------------------------------------
+1.connect to slave machine
+2.install java package  
+2.modify sshd_config file Publicauthentication  no
+						yes
+3.$sudo service sshd restart
+4.set password to ubuntu user $sudo passwd ubuntu
+5.exit
+--------------------------------------------
+step:3--enable ssh password less connection master to slave 
+--------------------------------------------------------------
+1.connect to master server
+2.switch to jenkins user generate ssh-keygen
+3.ssh-copy-id ubuntu@slave_private_ip
+4.yes
+5.again ssh ubuntu@slave_private_ip ---- now login into slave machine 
+-------------------------------------------------------------------
+step:4 -- slave machine
+-------------------------------------------------------------------
+1.download slave.jar file from master machine 
+  $wget http://jenkins_public_ip:8080/jnlpJars/slave.jar
+  chmod 777 slave.jar
+  pwd 
+  /home/ubuntu/slave.jar
+2.create a directory for "directory path" mkdir dir1
+  chmod 777 dir1
+  cd dir1 
+  pwd 
+  /home/ubuntu/dir1
+3.exit
+----------------------------------------------
+step:5 -- jenkins web page 
+----------------------------------------------
+1.open jenkins web page 
+2.go to manage jenkins--manage nodes and clouds
+    built in node--master machine
+3.create a new node--click on new node "slave1"
+4.select permanent agent
+5.create
+6.description -- 
+7.number of excutors -- it means how many jobs can run parallel
+8.remote root directory --- /home/ubuntu/dir1
+9.labels -- myslave--another name for slave 
+10.usage -- only build jobs with label expressions matching this
+11.launch method -- launch agent via excution of command on the controller (for this download plugin which is launch agent commands)
+12.launch command
+    ssh ubuntu@slave_private_ip java -jar /home/ubuntu/slave.jar
+13.save
+master - slave setup complete 
+-----------------------------------------------------------------
+step6:
+--------
+1.create development job 
+2.create testing job  
+3.link them and run development job
+4.after go into testin--configure--general--restrict where to run -- give label name "myslave"--apply and save 
+4.now development job run on master machine testing job run on slave machine
+-----------------------------------------------------------
